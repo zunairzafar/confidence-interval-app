@@ -17,7 +17,7 @@ method = st.sidebar.selectbox("Method", ["Z with sigma"])
 st.markdown(
     """
     <h1 style='text-align: center; color: #FF4B4B;'> Confidence Interval Simulator</h1>
-    <h3 style='text-align: center; color: #AAAAAA;'>by Zunair Zafar | Made with ❤️ and Streamlit</h3>
+    <h3 style='text-align: center; color: #AAAAAA;'>by Zunair Zafar | Made with Streamlit</h3>
     """,
     unsafe_allow_html=True,
 )
@@ -83,4 +83,5 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
 
