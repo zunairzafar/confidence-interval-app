@@ -1,7 +1,8 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.stats import norm
+from scipy.stats import norm, t
+
 
 # --- Sidebar Inputs ---
 st.sidebar.header("🔧 Simulation Settings")
@@ -11,13 +12,14 @@ population_std = st.sidebar.slider("Population Std Deviation", 1, 100, 15)
 num_simulations = st.sidebar.slider("Number of Simulations", 1, 1000, 100)
 confidence_level = st.sidebar.slider("Confidence Level (%)", 50, 99, 95)
 
-method = st.sidebar.selectbox("Method", ["Z with sigma"])
+method = st.sidebar.selectbox("Method", ["Z with sigma", "t with sample std"])
+
 
 # --- Main Title ---
 st.markdown(
     """
     <h1 style='text-align: center; color: #FF4B4B;'> Confidence Interval Simulator</h1>
-    <h3 style='text-align: center; color: #AAAAAA;'>by Zunair Zafar | Made with Streamlit</h3>
+    <h3 style='text-align: center; color: #AAAAAA;'>by Zunair Zafar | Made with ❤️ and Streamlit</h3>
     """,
     unsafe_allow_html=True,
 )
@@ -34,9 +36,19 @@ z_score = norm.ppf(1 - (1 - confidence_level / 100) / 2)
 for _ in range(num_simulations):
     sample = np.random.normal(loc=population_mean, scale=population_std, size=sample_size)
     mean = np.mean(sample)
-    stderr = population_std / np.sqrt(sample_size)
-    ci_lower = mean - z_score * stderr
-    ci_upper = mean + z_score * stderr
+
+    if method == "Z with sigma":
+        stderr = population_std / np.sqrt(sample_size)
+        z_score = norm.ppf(1 - (1 - confidence_level / 100) / 2)
+        ci_lower = mean - z_score * stderr
+        ci_upper = mean + z_score * stderr
+
+    elif method == "t with sample std":
+        sample_std = np.std(sample, ddof=1)  # sample standard deviation
+        stderr = sample_std / np.sqrt(sample_size)
+        t_score = t.ppf(1 - (1 - confidence_level / 100) / 2, df=sample_size - 1)
+        ci_lower = mean - t_score * stderr
+        ci_upper = mean + t_score * stderr
 
     sample_means.append(mean)
     ci_lowers.append(ci_lower)
@@ -83,5 +95,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
